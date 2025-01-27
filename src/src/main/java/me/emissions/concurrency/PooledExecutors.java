@@ -1,6 +1,7 @@
 package me.emissions.concurrency;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
@@ -10,6 +11,7 @@ public final class PooledExecutors {
     private PooledExecutors() {}
 
     private static final int NUMBER_POOLED_EXECUTORS = 50;
+    private static Executor mainThread = null;
 
     private static final List<ScheduledExecutorService> executors = IntStream.range(0, NUMBER_POOLED_EXECUTORS + 1)
         .mapToObj(i -> Executors.newSingleThreadScheduledExecutor(Executors.defaultThreadFactory()))
@@ -21,5 +23,13 @@ public final class PooledExecutors {
 
     public static List<ScheduledExecutorService> getExecutors() {
         return PooledExecutors.executors;
+    }
+
+    public static void setMainThread(final Executor executor) {
+        mainThread = executor;
+    }
+
+    public static Executor getMainThread() {
+        return mainThread;
     }
 }
