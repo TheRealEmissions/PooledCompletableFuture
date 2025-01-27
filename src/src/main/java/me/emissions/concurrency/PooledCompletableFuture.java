@@ -360,7 +360,7 @@ public class PooledCompletableFuture<T> {
      *
      * @return a copied {@link PooledCompletableFuture} using the pooled executors.
      */
-    public PooledCompletableFuture<T> asPooled() {
+    public PooledCompletableFuture<T> async() {
         return PooledCompletableFuture.of(this.future);
     }
 
@@ -370,8 +370,19 @@ public class PooledCompletableFuture<T> {
      * @param executor the executor to be used for the computation
      * @return a copied PooledCompletableFuture with the specified executor
      */
-    public PooledCompletableFuture<T> withExecutor(final Executor executor) {
+    public PooledCompletableFuture<T> async(final Executor executor) {
         return PooledCompletableFuture.of(this.future, executor);
+    }
+
+    public PooledCompletableFuture<T> sync() {
+        var mainThread = PooledExecutors.getMainThread();
+        if (mainThread == null) {
+            throw new NullPointerException("Cannot use main thread as main thread does not exist. Use PooledExecutors.setMainThread(Executor) to set a main thread.");
+        }
+        return PooledCompletableFuture.of(
+            this.future,
+            mainThread
+        );
     }
 
     public <U> PooledCompletableFuture<U> thenApply(final Function<? super T, ? extends U> fn) {
